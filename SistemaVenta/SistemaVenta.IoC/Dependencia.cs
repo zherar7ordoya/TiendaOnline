@@ -30,5 +30,7 @@ public static class Dependencia
         services.AddScoped<IVentaRepository, VentaRepository>();
         services.AddScoped<ICorreoService, CorreoService>();
         services.AddScoped<IFirebaseService, FirebaseService>();
+        services.AddScoped<IUtilidadesService, UtilidadesService>();
+        services.AddScoped<IRolService, RolService>();
     }
 }
