@@ -18,7 +18,7 @@ public interface IUsuarioService
     Task<Usuario> EditarUsuario(Usuario usuario,
                                 Stream? foto = null,
                                 string nombreFoto = "");
-    Task<Usuario> EliminarUsuario(int id);
+    Task<bool> EliminarUsuario(int id);
     Task<Usuario> GuardarUsuario(Usuario usuario);
     Task<List<Usuario>> ListarUsuarios();
     Task<Usuario> ObtenerUsuarioPorCredenciales(string correo, string clave);

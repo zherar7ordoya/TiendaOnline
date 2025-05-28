@@ -23,9 +23,12 @@ public class UsuarioService
     ICorreoService correo
 ) : IUsuarioService
 {
-    public Task<bool> CambiarClave(int id, string claveActual, string nuevaClave)
+    public async Task<bool> CambiarClave(int id, string claveActual, string nuevaClave)
     {
-        throw new NotImplementedException();
+        try
+        {
+        }
+        catch { throw; }
     }
 
     public async Task<Usuario> CrearUsuario(Usuario usuario, Stream? foto = null, string nombreFoto = "", string urlPlantilla = "")
@@ -90,19 +93,73 @@ public class UsuarioService
         catch (Exception ex) { throw; }
     }
 
-    public Task<Usuario> EditarUsuario(Usuario usuario, Stream? foto = null, string nombreFoto = "")
+    public async Task<Usuario> EditarUsuario(Usuario usuario, Stream? foto = null, string nombreFoto = "")
     {
-        throw new NotImplementedException();
+        Usuario existe = await repository.Obtener(x => x.Correo == usuario.Correo && x.IdUsuario != usuario.IdUsuario);
+        if (existe != null) throw new TaskCanceledException("Ya existe un usuario con el correo proporcionado.");
+
+        try
+        {
+            IQueryable<Usuario> query = await repository.Consultar(x => x.IdUsuario == usuario.IdUsuario);
+            Usuario usuario_editar = query.First();
+            usuario_editar.Nombre = usuario.Nombre;
+            usuario_editar.Correo = usuario.Correo;
+            usuario_editar.Telefono = usuario.Telefono;
+            usuario_editar.IdRol = usuario.IdRol;
+
+            if (usuario_editar.NombreFoto != nombreFoto)
+            {
+                usuario_editar.NombreFoto = nombreFoto;
+            }
+
+            if (foto != null)
+            {
+                string urlFoto = await firebase.SubirStorage(foto, "Carpeta_Usuario", usuario_editar.NombreFoto);
+                usuario_editar.UrlFoto = urlFoto;
+            }
+
+            bool resultado = await repository.Editar(usuario_editar);
+
+            if (!resultado) throw new TaskCanceledException("No se pudo editar el usuario.");
+
+            Usuario usuario_editado = query.Include(rol => rol.IdRolNavigation).First();
+            return usuario_editado;
+        }
+        catch { throw; }
     }
 
-    public Task<Usuario> EliminarUsuario(int id)
+    public async Task<bool> EliminarUsuario(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            Usuario usuario_encontrado =
+                await repository.Obtener(x => x.IdUsuario == id) ??
+                throw new TaskCanceledException("No se encontró el usuario a eliminar.");
+
+            string nombreFoto = usuario_encontrado.NombreFoto;
+            bool resultado = await repository.Eliminar(usuario_encontrado);
+
+            if (resultado) await firebase.EliminarStorage("Carpeta_Usuario", nombreFoto);
+            return true;
+        }
+        catch { throw; }
     }
 
-    public Task<Usuario> GuardarUsuario(Usuario usuario)
+    public async Task<Usuario> GuardarUsuario(Usuario usuario)
     {
-        throw new NotImplementedException();
+        try
+        {
+            Usuario usuario_encontrado = await repository.Obtener(x => x.IdUsuario == usuario.IdUsuario);
+            if (usuario_encontrado == null) throw new TaskCanceledException("No se encontró el usuario a guardar.");
+
+            usuario_encontrado.Correo = usuario.Correo;
+            usuario_encontrado.Telefono = usuario.Telefono;
+
+            bool resultado = await repository.Editar(usuario_encontrado);
+
+            return resultado ? usuario_encontrado : throw new TaskCanceledException("No se pudo guardar el usuario.");
+        }
+        catch { throw; }
     }
 
     public async Task<List<Usuario>> ListarUsuarios()
@@ -111,18 +168,34 @@ public class UsuarioService
         return usuarios.Include(rol => rol.IdRolNavigation).ToList();
     }
 
-    public Task<Usuario> ObtenerUsuarioPorCredenciales(string correo, string clave)
+    public async Task<Usuario> ObtenerUsuarioPorCredenciales(string correo, string clave)
     {
-        throw new NotImplementedException();
+        try
+        {
+            string clave_encriptada = utilidades.ConvertirSHA256(clave);
+            Usuario usurario_encontrado = await repository.Obtener(x => x.Correo.Equals(correo) && x.Clave.Equals(clave_encriptada));
+            return usurario_encontrado ?? throw new TaskCanceledException("No se encontró el usuario con las credenciales proporcionadas.");
+        }
+        catch { throw; }
     }
 
-    public Task<Usuario> ObtenerUsuarioPorId(int id)
+    public async Task<Usuario> ObtenerUsuarioPorId(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            IQueryable<Usuario> query = await repository.Consultar(x => x.IdUsuario == id);
+            Usuario usuario_encontrado = query.Include(rol => rol.IdRolNavigation).FirstOrDefault() ??
+                                          throw new TaskCanceledException("No se encontró el usuario con el ID proporcionado.");
+            return usuario_encontrado;
+        }
+        catch { throw; }
     }
 
-    public Task<bool> RestablecerClave(string correo, string urlPlantilla = "")
+    public async Task<bool> RestablecerClave(string correo, string urlPlantilla = "")
     {
-        throw new NotImplementedException();
+        try
+        {
+        }
+        catch { throw; }
     }
 }
