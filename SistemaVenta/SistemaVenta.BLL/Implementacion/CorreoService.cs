@@ -12,7 +12,7 @@ namespace BLL.Implementacion;
 
 public class CorreoService(IGenericRepository<Configuracion> repository) : ICorreoService
 {
-    public async Task<bool> EnviarCorreoAsync(string destinatario, string asunto, string mensaje)
+    public async Task<bool> EnviarCorreo(string destinatario, string asunto, string mensaje)
     {
         try
         {

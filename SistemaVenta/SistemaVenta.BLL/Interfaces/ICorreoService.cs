@@ -2,5 +2,5 @@
 
 public interface ICorreoService
 {
-    Task<bool> EnviarCorreoAsync(string destinatario, string asunto, string mensaje);
+    Task<bool> EnviarCorreo(string destinatario, string asunto, string mensaje);
 }
