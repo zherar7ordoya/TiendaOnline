@@ -32,5 +32,6 @@ public static class Dependencia
         services.AddScoped<IFirebaseService, FirebaseService>();
         services.AddScoped<IUtilidadesService, UtilidadesService>();
         services.AddScoped<IRolService, RolService>();
+        services.AddScoped<IUsuarioService, UsuarioService>();
     }
 }
