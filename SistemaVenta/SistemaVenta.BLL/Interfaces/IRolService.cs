@@ -10,5 +10,5 @@ namespace BLL.Interfaces;
 
 public interface IRolService
 {
-    Task<List<Rol>> Listar();
+    Task<List<Rol>> ListarRoles();
 }
