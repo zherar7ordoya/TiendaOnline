@@ -39,27 +39,98 @@ public class UsuariosController
     [HttpPost]
     public async Task<IActionResult> CrearUsuario([FromForm] IFormFile foto, [FromForm] string modelo)
     {
-        GenericResponse<VMUsuario> gResponse = new GenericResponse<VMUsuario>();
+        GenericResponse<VMUsuario> gResponse = new();
 
         try
         {
             VMUsuario vmUsuario = JsonConvert.DeserializeObject<VMUsuario>(modelo);
             string nombreFoto = string.Empty;
+            Stream? fotoStream = null;
+
             if (foto != null)
             {
                 string nombre_en_codigo = Guid.NewGuid().ToString("N");
+                string extension = Path.GetExtension(foto.FileName);
+                nombreFoto = string.Concat(nombre_en_codigo, extension);
+                fotoStream = foto.OpenReadStream();
             }
+
+            string urlPlantillaCorreo =
+                $"{Request.Scheme}://{Request.Host}/" +
+                $"Plantilla/EnviarClave?correo=[correo]&clave=[clave]";
+
+            Usuario usuario_creado = await usuarioService.CrearUsuario
+            (
+                mapper.Map<Usuario>(vmUsuario),
+                fotoStream,
+                nombreFoto,
+                urlPlantillaCorreo
+            );
+
+            vmUsuario = mapper.Map<VMUsuario>(usuario_creado);
+            gResponse.Estado = true;
+            gResponse.Objeto = vmUsuario;
         }
         catch (Exception ex)
         {
             gResponse.Estado = false;
             gResponse.Mensaje = ex.Message;
-
         }
-        catch (Exception)
+        return StatusCode(StatusCodes.Status200OK, gResponse);
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> EditarUsuario([FromForm] IFormFile foto, [FromForm] string modelo)
+    {
+        GenericResponse<VMUsuario> gResponse = new();
+
+        try
         {
+            VMUsuario vmUsuario = JsonConvert.DeserializeObject<VMUsuario>(modelo);
+            string nombreFoto = string.Empty;
+            Stream? fotoStream = null;
 
-            throw;
+            if (foto != null)
+            {
+                string nombre_en_codigo = Guid.NewGuid().ToString("N");
+                string extension = Path.GetExtension(foto.FileName);
+                nombreFoto = string.Concat(nombre_en_codigo, extension);
+                fotoStream = foto.OpenReadStream();
+            }
+
+            Usuario usuario_editado = await usuarioService.EditarUsuario
+            (
+                mapper.Map<Usuario>(vmUsuario),
+                fotoStream,
+                nombreFoto
+            );
+
+            vmUsuario = mapper.Map<VMUsuario>(usuario_editado);
+            gResponse.Estado = true;
+            gResponse.Objeto = vmUsuario;
         }
+        catch (Exception ex)
+        {
+            gResponse.Estado = false;
+            gResponse.Mensaje = ex.Message;
+        }
+        return StatusCode(StatusCodes.Status200OK, gResponse);
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> EliminarUsuario(int id)
+    {
+        GenericResponse<string> gResponse = new();
+        try
+        {
+            gResponse.Estado = await usuarioService.EliminarUsuario(id);
+        }
+        catch (Exception ex)
+        {
+            gResponse.Estado = false;
+            gResponse.Mensaje = ex.Message;
+        }
+
+        return StatusCode(StatusCodes.Status200OK, gResponse);
     }
 }
