@@ -3,6 +3,8 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Mail;
+using AplicacionWeb.Utilidades.AutoMapper;
+
 
 /* |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| */
 
@@ -12,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 await builder.Services.InyectarDependenciaAsync();
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 var app = builder.Build();
 
