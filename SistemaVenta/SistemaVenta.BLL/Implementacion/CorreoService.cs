@@ -33,10 +33,10 @@ public class CorreoService(IGenericRepository<Configuracion> repository) : ICorr
             {
                 Host = configuraciones["Host"],
                 Port = int.Parse(configuraciones["Puerto"]),
+                Credentials = credenciales,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 UseDefaultCredentials = false,
-                EnableSsl = true,
-                Credentials = credenciales
+                EnableSsl = true
             };
 
             cliente.Send(correo);

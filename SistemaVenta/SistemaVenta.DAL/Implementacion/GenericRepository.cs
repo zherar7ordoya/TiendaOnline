@@ -10,12 +10,12 @@ public class GenericRepository<TEntity>(DBVENTAContext context)
     : Interfaces.IGenericRepository<TEntity> where TEntity
     : class
 {
-    public Task<IQueryable<TEntity>> Consultar(Expression<Func<TEntity, bool>>? filtro = null)
+    public async Task<IQueryable<TEntity>> Consultar(Expression<Func<TEntity, bool>> filtro = null)
     {
-        IQueryable<TEntity> query = filtro == null
+        IQueryable<TEntity> queryEntidad = filtro == null
             ? context.Set<TEntity>()
             : context.Set<TEntity>().Where(filtro);
-        return (Task<IQueryable<TEntity>>)query;
+        return queryEntidad;
     }
 
     public async Task<TEntity> Crear(TEntity entidad)
