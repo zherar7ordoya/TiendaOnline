@@ -21,7 +21,7 @@ $(function ()
         })
         .then(responseJson =>
         {
-            if (responseJson.lenght > 0)
+            if (responseJson.length > 0)
             {
                 responseJson.forEach(item =>
                 {
@@ -48,7 +48,7 @@ $(function ()
                 {
                     "data": "urlFoto", render: function (data)
                     {
-                        return `<img style="height: 60px" src=${data} class="rounded mx-auto d-block" />`;
+                        return `<img alt="Foto" style="height: 60px" src=${data} class="rounded mx-auto d-block" />`;
                     }
                 },
                 { "data": "nombre" },
@@ -58,7 +58,7 @@ $(function ()
                 {
                     "data": "esActivo", render: function (data)
                     {
-                        if (data == 1)
+                        if (data === 1)
                         {
                             return '<span class="badge badge-info">Activo</span>';
                         }
@@ -106,7 +106,7 @@ function mostrarModal(modelo = MODELO_BASE)
     $("#txtNombre").val(modelo.nombre);
     $("#txtCorreo").val(modelo.correo);
     $("#txtTelefono").val(modelo.telefono);
-    $("#cboRol").val(modelo.idRol == 0 ? $("#cboRol option:first").val() : modelo.idRol);
+    $("#cboRol").val(modelo.idRol === 0 ? $("#cboRol option:first").val() : modelo.idRol);
     $("#cboEstado").val(modelo.esActivo);
     $("#txtFoto").val("");
     $("#imgUsuario").attr("src", modelo.urlFoto);

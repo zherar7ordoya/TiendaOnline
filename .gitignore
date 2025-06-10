@@ -1,8 +1,38 @@
-# Ignore temporary directories from Visual Studio 2022
+# Rider and Visual Studio directories
+.idea/
 .vs/
 .vscode/
-# Ignore build directories
+
+# Build directories
 bin/
 obj/
-# Ignore NuGet packages
+
+# NuGet packages
 packages/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider project files
+*.iml
+*.ipr
+*.iws
+
+# Logs
+*.log
+
+# DotCover
+*.dotCover
+
+# ReSharper
+_ReSharper*/
+*.DotSettings.user
+
+# Publish outputs
+publish/
+
+# Others
+*.DS_Store
