@@ -1,11 +1,6 @@
 ﻿using IoC;
 using AplicacionWeb.Utilidades.AutoMapper;
 
-
-/* |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| */
-
-//ProbarEmail(); // This is a test to send an email using Zoho SMTP in C#.
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
