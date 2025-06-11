@@ -38,15 +38,16 @@ public class UsuarioService
         catch { throw; }
     }
 
-    public async Task<Usuario> CrearUsuario(Usuario usuario, Stream? foto = null, string nombreFoto = "", string urlPlantilla = "")
+    public async Task<Usuario> Crear(Usuario usuario, Stream? foto = null, string nombreFoto = "", string UrlPlantillaCorreo = "")
     {
         Usuario existe = await genericRepository.Obtener(x => x.Correo == usuario.Correo);
+        
         if (existe != null) throw new TaskCanceledException("Ya existe un usuario con el correo proporcionado.");
 
         try
         {
-            string clave = utilidadesService.GenerarClave();
-            usuario.Clave = utilidadesService.ConvertirSHA256(clave);
+            string clave_generada = utilidadesService.GenerarClave();
+            usuario.Clave = utilidadesService.ConvertirSHA256(clave_generada);
             usuario.NombreFoto = nombreFoto;
 
             if (foto != null)
@@ -59,13 +60,14 @@ public class UsuarioService
 
             if (usuario_creado.IdUsuario == 0) throw new TaskCanceledException("No se pudo crear el usuario.");
 
-            if (urlPlantilla != "")
+            if (UrlPlantillaCorreo != "")
             {
-                urlPlantilla = urlPlantilla.Replace("[Correo]", usuario.Correo)
-                                           .Replace("[Clave]", clave);
+                UrlPlantillaCorreo = UrlPlantillaCorreo
+                    .Replace("[correo]", usuario_creado.Correo)
+                    .Replace("[clave]", clave_generada);
 
                 string htmlCorreo = string.Empty;
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlPlantilla);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(UrlPlantillaCorreo);
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
                 if (response.StatusCode == HttpStatusCode.OK)

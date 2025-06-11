@@ -12,23 +12,18 @@ const MODELO_BASE = {
 
 let tablaData;
 
-$(function ()
-{
+$(function () {
     fetch('/Usuarios/ListarRoles')
-        .then(response =>
-        {
+        .then(response => {
             return response.ok ? response.json() : Promise.reject(response);
         })
-        .then(responseJson =>
-        {
-            if (responseJson.length > 0)
-            {
-                responseJson.forEach(item =>
-                {
+        .then(responseJson => {
+            if (responseJson.length > 0) {
+                responseJson.forEach(item => {
                     $("#cboRol").append
-                        (
-                            $("<option>").val(item.idRol).text(item.descripcion)
-                        );
+                    (
+                        $("<option>").val(item.idRol).text(item.descripcion)
+                    );
                 });
             }
         });
@@ -37,32 +32,28 @@ $(function ()
     tablaData = $('#tbdata').DataTable({
         responsive: true,
         "ajax":
-        {
-            "url": '/Usuarios/ListarUsuarios',
-            "type": "GET",
-            "datatype": "json"
-        },
+            {
+                "url": '/Usuarios/ListarUsuarios',
+                "type": "GET",
+                "datatype": "json"
+            },
         "columns":
             [
-                { "data": "idUsuario", "visible": false, "searchable": false },
+                {"data": "idUsuario", "visible": false, "searchable": false},
                 {
-                    "data": "urlFoto", render: function (data)
-                    {
-                        return `<img alt="Foto" style="height: 60px" src=${ data } class="rounded mx-auto d-block" />`;
+                    "data": "urlFoto", render: function (data) {
+                        return `<img alt="Foto" style="height: 60px" src=${data} class="rounded mx-auto d-block" />`;
                     }
                 },
-                { "data": "nombre" },
-                { "data": "correo" },
-                { "data": "telefono" },
-                { "data": "nombreRol" },
+                {"data": "nombre"},
+                {"data": "correo"},
+                {"data": "telefono"},
+                {"data": "nombreRol"},
                 {
-                    "data": "esActivo", render: function (data)
-                    {
-                        if (data === 1)
-                        {
+                    "data": "esActivo", render: function (data) {
+                        if (data === 1) {
                             return '<span class="badge badge-info">Activo</span>';
-                        } else
-                        {
+                        } else {
                             return '<span class="badge badge-danger">No Activo</span>';
                         }
                     }
@@ -87,20 +78,19 @@ $(function ()
                 title: '',
                 filename: 'Reporte Usuarios',
                 exportOptions:
-                {
-                    columns: [2, 3, 4, 5, 6]
-                }
+                    {
+                        columns: [2, 3, 4, 5, 6]
+                    }
             }, 'pageLength'
         ],
         language:
-        {
-            url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
-        },
+            {
+                url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
+            },
     });
 });
 
-function mostrarModal(modelo = MODELO_BASE)
-{
+function mostrarModal(modelo = MODELO_BASE) {
     $("#txtId").val(modelo.idUsuario);
     $("#txtNombre").val(modelo.nombre);
     $("#txtCorreo").val(modelo.correo);
@@ -113,26 +103,24 @@ function mostrarModal(modelo = MODELO_BASE)
     $("#modalData").modal("show");
 }
 
-$("#btnNuevo").on("click", function ()
-{
+$("#btnNuevo").on("click", function () {
     mostrarModal();
 });
 
-$("#btnGuardar").on("click", function ()
-{
-    debugger;
+$("#btnGuardar").on("click", function () {
+    //debugger;
     const inputs = $("input.input-validar").serializeArray();
     const inputs_sin_valor = inputs.filter(item => item.value.trim() === "");
 
-    if (inputs_sin_valor.length > 0)
-    {
-        const mensaje = `Debe completar el campo "${ inputs_sin_valor[0].name }"`;
+    if (inputs_sin_valor.length > 0) {
+        const mensaje = `Debe completar el campo "${inputs_sin_valor[0].name}"`;
         toastr.warning("", mensaje);
-        $(`input[name="${ inputs_sin_valor[0].name }"]`).focus();
+        $(`input[name="${inputs_sin_valor[0].name}"]`).focus();
+        return;
     }
-    
+
     const modelo = structuredClone(MODELO_BASE);
-    
+
     modelo['idUsuario'] = parseInt($("#txtId").val());
     modelo['nombre'] = $("#txtNombre").val();
     modelo['correo'] = $("#txtCorreo").val();
@@ -144,7 +132,40 @@ $("#btnGuardar").on("click", function ()
     const formData = new FormData();
     formData.append("foto", inputFoto.files[0]);
     formData.append("modelo", JSON.stringify(modelo));
-    
-    $("modalData").find("div.modal-content").LoadingOverlay("show");
-    
+
+    $("#modalData").find("div.modal-content").LoadingOverlay("show");
+
+    if (modelo.idUsuario === 0) {
+        fetch('/Usuarios/Crear',
+            {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                $("#modalData").find("div.modal-content").LoadingOverlay("hide");
+                return response.ok ? response.json() : Promise.reject(response);
+            })
+            .then(responseJson => {
+                if (responseJson.estado) {
+                    tablaData.row.add(responseJson.objeto).draw(false);
+                    $("#modalData").modal("hide");
+                    swal({
+                        title: "Listo",
+                        text: "El usuario se ha creado correctamente",
+                        icon: "success",
+                        button: "Aceptar"
+                    });
+                }
+                else
+                {
+                    swal({
+                        title: "Error",
+                        text: responseJson.mensaje,
+                        icon: "error",
+                        button: "Aceptar"
+                    });
+                }
+            })
+    }
+
 });

@@ -37,7 +37,7 @@ public class UsuariosController
     }
 
     [HttpPost]
-    public async Task<IActionResult> CrearUsuario([FromForm] IFormFile foto, [FromForm] string modelo)
+    public async Task<IActionResult> Crear([FromForm] IFormFile foto, [FromForm] string modelo)
     {
         GenericResponse<VMUsuario> gResponse = new();
 
@@ -59,7 +59,7 @@ public class UsuariosController
                 $"{Request.Scheme}://{Request.Host}/" +
                 $"Plantilla/EnviarClave?correo=[correo]&clave=[clave]";
 
-            Usuario usuario_creado = await usuarioService.CrearUsuario
+            Usuario usuario_creado = await usuarioService.Crear
             (
                 mapper.Map<Usuario>(vmUsuario),
                 fotoStream,

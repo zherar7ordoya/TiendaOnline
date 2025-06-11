@@ -5,10 +5,10 @@ namespace BLL.Interfaces;
 public interface IUsuarioService
 {
     Task<bool> CambiarClave(int id, string claveActual, string nuevaClave);
-    Task<Usuario> CrearUsuario(Usuario usuario,
+    Task<Usuario> Crear(Usuario usuario,
                                Stream? foto = null,
                                string nombreFoto = "",
-                               string urlPlantilla = "");
+                               string UrlPlantillaCorreo = "");
     Task<Usuario> EditarUsuario(Usuario usuario,
                                 Stream? foto = null,
                                 string nombreFoto = "");
