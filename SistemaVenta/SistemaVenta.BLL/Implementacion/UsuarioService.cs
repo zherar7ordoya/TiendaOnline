@@ -104,7 +104,7 @@ public class UsuarioService
         catch (Exception ex) { throw; }
     }
 
-    public async Task<Usuario> EditarUsuario(Usuario usuario, Stream? foto = null, string nombreFoto = "")
+    public async Task<Usuario> Editar(Usuario usuario, Stream? foto = null, string nombreFoto = "")
     {
         Usuario existe = await genericRepository.Obtener(x => x.Correo == usuario.Correo && x.IdUsuario != usuario.IdUsuario);
         if (existe != null) throw new TaskCanceledException("Ya existe un usuario con el correo proporcionado.");
@@ -117,6 +117,7 @@ public class UsuarioService
             usuario_editar.Correo = usuario.Correo;
             usuario_editar.Telefono = usuario.Telefono;
             usuario_editar.IdRol = usuario.IdRol;
+            usuario_editar.EsActivo = usuario.EsActivo;
 
             if (usuario_editar.NombreFoto != nombreFoto)
             {
@@ -139,7 +140,7 @@ public class UsuarioService
         catch { throw; }
     }
 
-    public async Task<bool> EliminarUsuario(int id)
+    public async Task<bool> Eliminar(int id)
     {
         try
         {
@@ -156,7 +157,7 @@ public class UsuarioService
         catch { throw; }
     }
 
-    public async Task<Usuario> GuardarUsuario(Usuario usuario)
+    public async Task<Usuario> Guardar(Usuario usuario)
     {
         try
         {

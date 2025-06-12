@@ -9,11 +9,11 @@ public interface IUsuarioService
                                Stream? foto = null,
                                string nombreFoto = "",
                                string UrlPlantillaCorreo = "");
-    Task<Usuario> EditarUsuario(Usuario usuario,
+    Task<Usuario> Editar(Usuario usuario,
                                 Stream? foto = null,
                                 string nombreFoto = "");
-    Task<bool> EliminarUsuario(int id);
-    Task<Usuario> GuardarUsuario(Usuario usuario);
+    Task<bool> Eliminar(int id);
+    Task<Usuario> Guardar(Usuario usuario);
     Task<List<Usuario>> ListarUsuarios();
     Task<Usuario> ObtenerUsuarioPorCredenciales(string correo, string clave);
     Task<Usuario> ObtenerUsuarioPorId(int id);

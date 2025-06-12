@@ -80,7 +80,7 @@ public class UsuariosController
     }
 
     [HttpPut]
-    public async Task<IActionResult> EditarUsuario([FromForm] IFormFile foto, [FromForm] string modelo)
+    public async Task<IActionResult> Editar([FromForm] IFormFile foto, [FromForm] string modelo)
     {
         GenericResponse<VMUsuario> gResponse = new();
 
@@ -98,7 +98,7 @@ public class UsuariosController
                 fotoStream = foto.OpenReadStream();
             }
 
-            Usuario usuario_editado = await usuarioService.EditarUsuario
+            Usuario usuario_editado = await usuarioService.Editar
             (
                 mapper.Map<Usuario>(vmUsuario),
                 fotoStream,
@@ -118,12 +118,12 @@ public class UsuariosController
     }
 
     [HttpDelete]
-    public async Task<IActionResult> EliminarUsuario(int id)
+    public async Task<IActionResult> Eliminar(int id)
     {
         GenericResponse<string> gResponse = new();
         try
         {
-            gResponse.Estado = await usuarioService.EliminarUsuario(id);
+            gResponse.Estado = await usuarioService.Eliminar(id);
         }
         catch (Exception ex)
         {

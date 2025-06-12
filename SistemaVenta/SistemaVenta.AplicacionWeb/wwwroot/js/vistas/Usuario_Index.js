@@ -12,14 +12,19 @@ const MODELO_BASE = {
 
 let tablaData;
 
-$(function () {
+$(function ()
+{
     fetch('/Usuarios/ListarRoles')
-        .then(response => {
+        .then(response =>
+        {
             return response.ok ? response.json() : Promise.reject(response);
         })
-        .then(responseJson => {
-            if (responseJson.length > 0) {
-                responseJson.forEach(item => {
+        .then(responseJson =>
+        {
+            if (responseJson.length > 0)
+            {
+                responseJson.forEach(item =>
+                {
                     $("#cboRol").append
                     (
                         $("<option>").val(item.idRol).text(item.descripcion)
@@ -41,7 +46,8 @@ $(function () {
             [
                 {"data": "idUsuario", "visible": false, "searchable": false},
                 {
-                    "data": "urlFoto", render: function (data) {
+                    "data": "urlFoto", render: function (data)
+                    {
                         return `<img alt="Foto" style="height: 60px" src=${data} class="rounded mx-auto d-block" />`;
                     }
                 },
@@ -50,10 +56,14 @@ $(function () {
                 {"data": "telefono"},
                 {"data": "nombreRol"},
                 {
-                    "data": "esActivo", render: function (data) {
-                        if (data === 1) {
+                    "data": "esActivo", render: function (data)
+                    {
+                        if (data === 1)
+                        {
                             return '<span class="badge badge-info">Activo</span>';
-                        } else {
+                        }
+                        else
+                        {
                             return '<span class="badge badge-danger">No Activo</span>';
                         }
                     }
@@ -90,7 +100,8 @@ $(function () {
     });
 });
 
-function mostrarModal(modelo = MODELO_BASE) {
+function mostrarModal(modelo = MODELO_BASE)
+{
     $("#txtId").val(modelo.idUsuario);
     $("#txtNombre").val(modelo.nombre);
     $("#txtCorreo").val(modelo.correo);
@@ -103,16 +114,19 @@ function mostrarModal(modelo = MODELO_BASE) {
     $("#modalData").modal("show");
 }
 
-$("#btnNuevo").on("click", function () {
+$("#btnNuevo").on("click", function ()
+{
     mostrarModal();
 });
 
-$("#btnGuardar").on("click", function () {
+$("#btnGuardar").on("click", function ()
+{
     //debugger;
     const inputs = $("input.input-validar").serializeArray();
     const inputs_sin_valor = inputs.filter(item => item.value.trim() === "");
 
-    if (inputs_sin_valor.length > 0) {
+    if (inputs_sin_valor.length > 0)
+    {
         const mensaje = `Debe completar el campo "${inputs_sin_valor[0].name}"`;
         toastr.warning("", mensaje);
         $(`input[name="${inputs_sin_valor[0].name}"]`).focus();
@@ -135,18 +149,22 @@ $("#btnGuardar").on("click", function () {
 
     $("#modalData").find("div.modal-content").LoadingOverlay("show");
 
-    if (modelo.idUsuario === 0) {
+    if (modelo.idUsuario === 0)
+    {
         fetch('/Usuarios/Crear',
             {
                 method: 'POST',
                 body: formData
             })
-            .then(response => {
+            .then(response =>
+            {
                 $("#modalData").find("div.modal-content").LoadingOverlay("hide");
                 return response.ok ? response.json() : Promise.reject(response);
             })
-            .then(responseJson => {
-                if (responseJson.estado) {
+            .then(responseJson =>
+            {
+                if (responseJson.estado)
+                {
                     tablaData.row.add(responseJson.objeto).draw(false);
                     $("#modalData").modal("hide");
                     swal({
@@ -167,5 +185,128 @@ $("#btnGuardar").on("click", function () {
                 }
             })
     }
+    else
+    {
+        fetch('/Usuarios/Editar',
+            {
+                method: 'PUT',
+                body: formData
+            })
+            .then(response =>
+            {
+                $("#modalData").find("div.modal-content").LoadingOverlay("hide");
+                return response.ok ? response.json() : Promise.reject(response);
+            })
+            .then(responseJson =>
+            {
+                if (responseJson.estado)
+                {
+                    tablaData.row(filaSeleccionada).data(responseJson.objeto).draw(false);
+                    filaSeleccionada = null;
+                    $("#modalData").modal("hide");
+                    swal({
+                        title: "Listo",
+                        text: "El usuario fue modificado correctamente",
+                        icon: "success",
+                        button: "Aceptar"
+                    });
+                }
+                else
+                {
+                    swal({
+                        title: "Error",
+                        text: responseJson.mensaje,
+                        icon: "error",
+                        button: "Aceptar"
+                    });
+                }
+            });
+    }
+});
 
+let filaSeleccionada;
+
+$("#tbdata tbody").on("click", ".btn-editar", function ()
+{
+    if ($(this).closest("tr").hasClass("child"))
+    {
+        filaSeleccionada = $(this).closest("tr").prev();
+    }
+    else
+    {
+        filaSeleccionada = $(this).closest("tr");
+    }
+
+    const data = tablaData.row(filaSeleccionada).data();
+    console.log(data);
+    mostrarModal(data);
+});
+
+$("#tbdata tbody").on("click", ".btn-eliminar", function ()
+{
+    let fila;
+
+    if ($(this).closest("tr").hasClass("child"))
+    {
+        filaSeleccionada = $(this).closest("tr").prev();
+    }
+    else
+    {
+        filaSeleccionada = $(this).closest("tr");
+    }
+
+    const data = tablaData.row(fila).data();
+
+    swal({
+            title: "¿Está seguro?",
+            text: `¿Desea eliminar el usuario "${data.nombre}"?`,
+            icon: "warning",
+            showCancelButton: true,
+            dangerMode: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "No, cancelar",
+            closeOnConfirm: false,
+            closeOnCancel: true
+        },
+        function (respuesta)
+        {
+            if (respuesta)
+            {
+                $(".showSweetAlert").LoadingOverlay("show");
+
+                fetch(`/Usuarios/Eliminar?IdUsuario=${data.idUsuario}`, {
+                    method: 'DELETE'
+                })
+                    .then(response =>
+                    {
+                        $(".showSweetAlert").LoadingOverlay("hide");
+                        return response.ok ? response.json() : Promise.reject(response);
+                    })
+                    .then(responseJson =>
+                    {
+                        if (responseJson.estado)
+                        {
+                            tablaData.row(fila).remove().draw(false);
+                            
+                            swal({
+                                title: "Listo",
+                                text: "El usuario fue eliminado correctamente",
+                                icon: "success",
+                                button: "Aceptar"
+                            });
+                        }
+                        else
+                        {
+                            swal({
+                                title: "Error",
+                                text: responseJson.mensaje,
+                                icon: "error",
+                                button: "Aceptar"
+                            });
+                        }
+                    });
+            }
+        }
+    )
 });
