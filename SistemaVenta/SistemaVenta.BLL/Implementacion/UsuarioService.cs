@@ -70,6 +70,8 @@ public class UsuarioService
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(UrlPlantillaCorreo);
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
+              
+
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     using Stream stream = response.GetResponseStream();
@@ -182,8 +184,8 @@ public class UsuarioService
         try
         {
             string clave_encriptada = utilidadesService.ConvertirSHA256(clave);
-            Usuario usurario_encontrado = await genericRepository.Obtener(x => x.Correo.Equals(correo) && x.Clave.Equals(clave_encriptada));
-            return usurario_encontrado ?? throw new TaskCanceledException("No se encontró el usuario con las credenciales proporcionadas.");
+            Usuario usuario_encontrado = await genericRepository.Obtener(x => x.Correo.Equals(correo) && x.Clave.Equals(clave_encriptada));
+            return usuario_encontrado ?? throw new TaskCanceledException("No se encontró el usuario con las credenciales proporcionadas.");
         }
         catch { throw; }
     }

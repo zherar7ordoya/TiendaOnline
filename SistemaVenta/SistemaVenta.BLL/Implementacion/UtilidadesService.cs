@@ -18,12 +18,13 @@ public class UtilidadesService : IUtilidadesService
                 sb.Append(b.ToString("x2")); // Convert each byte to a hexadecimal string
             }
         }
+
         return sb.ToString();
     }
 
     public string GenerarClave()
     {
-        string clave = new Guid().ToString("N")[..6];
+        var clave = Guid.NewGuid().ToString("N")[..6];
         return clave;
     }
 }
