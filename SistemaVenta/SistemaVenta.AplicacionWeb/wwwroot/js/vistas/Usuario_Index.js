@@ -1,4 +1,6 @@
-﻿console.log("Cargando Usuario_Index.js");
+﻿"use strict";
+
+console.log("Cargando Usuario_Index.js");
 
 const MODELO_BASE = {
     idUsuario: 0,
@@ -248,32 +250,33 @@ $("#tbdata tbody").on("click", ".btn-eliminar", function ()
 
     if ($(this).closest("tr").hasClass("child"))
     {
-        filaSeleccionada = $(this).closest("tr").prev();
+        fila = $(this).closest("tr").prev();
     }
     else
     {
-        filaSeleccionada = $(this).closest("tr");
+        fila = $(this).closest("tr");
     }
 
     const data = tablaData.row(fila).data();
 
     swal({
-            title: "¿Está seguro?",
-            text: `¿Desea eliminar el usuario "${data.nombre}"?`,
-            icon: "warning",
+            title: "Estas seguro?",
+            text: `Eliminar el usuario ${data.nombre}`,
+            type: "warning",
             showCancelButton: true,
-            dangerMode: true,
             confirmButtonClass: "btn-danger",
-            confirmButtonText: "Sí, eliminar",
+            confirmButtonText: "Si, eliminar",
             cancelButtonText: "No, cancelar",
             closeOnConfirm: false,
-            closeOnCancel: true
+            closeOnCancel: true,
         },
         function (respuesta)
         {
             if (respuesta)
             {
                 $(".showSweetAlert").LoadingOverlay("show");
+                
+                //debugger;
 
                 fetch(`/Usuarios/Eliminar?IdUsuario=${data.idUsuario}`, {
                     method: 'DELETE'
@@ -287,7 +290,7 @@ $("#tbdata tbody").on("click", ".btn-eliminar", function ()
                     {
                         if (responseJson.estado)
                         {
-                            tablaData.row(fila).remove().draw(false);
+                            tablaData.row(fila).remove().draw();
                             
                             swal({
                                 title: "Listo",

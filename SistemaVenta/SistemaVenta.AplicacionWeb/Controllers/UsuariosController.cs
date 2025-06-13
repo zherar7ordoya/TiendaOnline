@@ -118,12 +118,12 @@ public class UsuariosController
     }
 
     [HttpDelete]
-    public async Task<IActionResult> Eliminar(int id)
+    public async Task<IActionResult> Eliminar(int IdUsuario)
     {
         GenericResponse<string> gResponse = new();
         try
         {
-            gResponse.Estado = await usuarioService.Eliminar(id);
+            gResponse.Estado = await usuarioService.Eliminar(IdUsuario);
         }
         catch (Exception ex)
         {
