@@ -1,10 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
-using Newtonsoft.Json;
-using AplicacionWeb.Models.ViewModels;
+﻿using AplicacionWeb.Models.ViewModels;
 using AplicacionWeb.Utilidades.Response;
+
+using AutoMapper;
+
 using BLL.Interfaces;
+
 using Entity;
+
+using Microsoft.AspNetCore.Mvc;
+
+using Newtonsoft.Json;
+
+using System.Diagnostics;
 
 namespace AplicacionWeb.Controllers;
 
@@ -52,7 +59,17 @@ public class UsuariosController
                 string nombre_en_codigo = Guid.NewGuid().ToString("N");
                 string extension = Path.GetExtension(foto.FileName);
                 nombreFoto = string.Concat(nombre_en_codigo, extension);
-                fotoStream = foto.OpenReadStream();
+
+                try
+                {
+                    EventLog.WriteEntry("Application", "Intentando abrir stream de foto...", EventLogEntryType.Information);
+                    fotoStream = foto.OpenReadStream();
+                }
+                catch (Exception ex)
+                {
+                    System.IO.File.WriteAllText("error_log.txt", ex.ToString());
+                    throw;
+                }
             }
 
             string urlPlantillaCorreo =
